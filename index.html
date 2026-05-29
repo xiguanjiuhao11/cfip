@@ -320,8 +320,8 @@
                     // 填充到输入框
                     ipSourceInput.value = url;
                     
-                    // 复制到剪贴板
-                    navigator.clipboard.writeText(url)
+                    // 复制到剪贴板（兼容移动端）
+                    copyToClipboard(url)
                         .then(() => {
                             // 提供视觉反馈
                             const originalColor = link.style.color;
@@ -332,6 +332,7 @@
                         })
                         .catch(err => {
                             console.error('复制失败:', err);
+                            alert('复制失败，请手动复制：' + url);
                         });
                 });
             });
@@ -346,8 +347,8 @@
                 if (selectedUrl) {
                     ipSourceInput.value = selectedUrl;
                     
-                    // 复制到剪贴板
-                    navigator.clipboard.writeText(selectedUrl)
+                    // 复制到剪贴板（兼容移动端）
+                    copyToClipboard(selectedUrl)
                         .then(() => {
                             // 提供视觉反馈
                             const originalColor = presetIpSelect.style.color;
@@ -358,9 +359,47 @@
                         })
                         .catch(err => {
                             console.error('复制失败:', err);
+                            alert('复制失败，请手动复制：' + selectedUrl);
                         });
                 }
             });
+
+            // 通用复制函数（兼容移动端）
+            async function copyToClipboard(text) {
+                // 优先使用剪贴板API
+                if (navigator.clipboard && window.isSecureContext) {
+                    return navigator.clipboard.writeText(text);
+                }
+                
+                // 降级方案：创建临时输入框
+                return new Promise((resolve, reject) => {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    
+                    // 防止滚动到页面底部
+                    textArea.style.position = 'fixed';
+                    textArea.style.top = '0';
+                    textArea.style.left = '0';
+                    textArea.style.opacity = '0';
+                    
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    try {
+                        const successful = document.execCommand('copy');
+                        if (successful) {
+                            resolve();
+                        } else {
+                            reject(new Error('复制失败'));
+                        }
+                    } catch (err) {
+                        reject(err);
+                    } finally {
+                        document.body.removeChild(textArea);
+                    }
+                });
+            }
 
             // 生成链接函数
           async function generateLinks(uuid = defaultUUID, domain = defaultDomain, ipSource = defaultIpSource, custom3 = defaultCustom3) {
@@ -405,43 +444,52 @@
             <p>共生成 ${links.length} 个链接</p>
         `;
 
-        // 为每个节点添加点击复制功能（原逻辑不变）
+        // 为每个节点添加点击复制功能（兼容移动端）
         const listItems = document.querySelectorAll('#results li');
         listItems.forEach(item => {
-            item.addEventListener('click', async () => {
-                const linkSpan = item.querySelector('.link');
-                const copyTip = item.querySelector('.copy-tip');
-                if (!linkSpan) return;
-                
-                const linkText = linkSpan.textContent;
-                try {
-                    await navigator.clipboard.writeText(linkText);
-                    // 提供视觉反馈
-                    const originalBg = item.style.backgroundColor;
-                    item.style.backgroundColor = '#e8f5e9';
-                    
-                    // 显示已复制提示
-                    if (copyTip) {
-                        copyTip.style.opacity = '1';
-                    }
-                    
-                    // 1秒后恢复原背景色和隐藏提示
-                    setTimeout(() => {
-                        item.style.backgroundColor = originalBg || '';
-                        if (copyTip) {
-                            copyTip.style.opacity = '0';
-                        }
-                    }, 1000);
-                } catch (err) {
-                    console.error('复制失败:', err);
-                    alert('复制失败，请重试');
-                }
+            // 同时监听click和touch事件
+            item.addEventListener('click', handleItemCopy);
+            item.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // 防止移动端双击放大
+                handleItemCopy.call(item);
             });
         });
     } catch (error) {
         resultsDiv.innerHTML = `<p>生成失败: ${error.message}</p>`;
     }
 }
+
+// 处理单个节点复制
+async function handleItemCopy() {
+    const linkSpan = this.querySelector('.link');
+    const copyTip = this.querySelector('.copy-tip');
+    if (!linkSpan) return;
+    
+    const linkText = linkSpan.textContent;
+    try {
+        await copyToClipboard(linkText);
+        // 提供视觉反馈
+        const originalBg = this.style.backgroundColor;
+        this.style.backgroundColor = '#e8f5e9';
+        
+        // 显示已复制提示
+        if (copyTip) {
+            copyTip.style.opacity = '1';
+        }
+        
+        // 1秒后恢复原背景色和隐藏提示
+        setTimeout(() => {
+            this.style.backgroundColor = originalBg || '';
+            if (copyTip) {
+                copyTip.style.opacity = '0';
+            }
+        }, 1000);
+    } catch (err) {
+        console.error('复制失败:', err);
+        alert('复制失败，请手动复制：' + linkText);
+    }
+}
+
             // 页面加载时使用默认值生成链接
             generateLinks();
 
@@ -454,7 +502,7 @@
                 generateLinks(uuid, domain, ipSource, custom3);
             });
 
-            // 一键复制全部链接功能
+            // 一键复制全部链接功能（兼容移动端）
             document.getElementById('copyAllBtn').addEventListener('click', async () => {
                 const links = document.querySelectorAll('.link');
                 if (links.length === 0) {
@@ -464,7 +512,7 @@
 
                 const text = Array.from(links).map(link => link.textContent).join('\n');
                 try {
-                    await navigator.clipboard.writeText(text);
+                    await copyToClipboard(text);
                     const btn = document.getElementById('copyAllBtn');
                     const originalText = btn.textContent;
                     btn.textContent = '已复制';
@@ -475,7 +523,7 @@
                     }, 1500);
                 } catch (err) {
                     console.error('复制失败:', err);
-                    alert('复制失败，请重试');
+                    alert('复制失败，请手动复制全部节点');
                 }
             });
         });
