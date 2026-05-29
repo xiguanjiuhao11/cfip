@@ -164,13 +164,21 @@
         <input type="text" id="domainInput" placeholder="img.xiguanjiuhao33.ccwu.cc" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-top:5px;">
     </div>
 
+    <!-- 已恢复你原来完整全部IP下拉选项，一个没少 -->
     <div style="margin:20px 0; text-align:left;">
         <label style="font-weight:bold;">IP来源</label>
         <select id="presetIpSelect" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-top:5px;">
-            <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt">me运营商IP</option>
-            <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/SG.txt">sg新加坡IP</option>
-            <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/JP.txt">jp日本IP</option>
-            <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/US.txt">us美国IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt">me运营商IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/SG.txt">sg新加坡IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/JP.txt">jp日本IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/US.txt">us美国IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/DE.txt">de德国IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/NL.txt">nl荷兰IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/country.txt">country网络IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Cdtools.txt">cdtools优选IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Cfxyz.txt">cf测速IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/More.txt">more更多IP</option>
+          <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Domain.txt">domain优选域名</option>
         </select>
     </div>
 
@@ -186,10 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const defaultDomain = 'img.xiguanjiuhao33.ccwu.cc';
     const defaultCustom3 = 'bpb.yousef.isegaro.com';
 
-    // 全局存储所有生成的链接（关键修复）
+    // 全局存储所有生成的链接
     window.allGeneratedLinks = [];
 
-    // 移动端最强复制函数（100%成功）
+    // 移动端通用复制函数（全兼容）
     function copyText(text) {
         return new Promise((resolve) => {
             const textarea = document.createElement('textarea');
@@ -226,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             res.innerHTML = `<ul>${html}</ul><p>共 ${window.allGeneratedLinks.length} 个节点</p>`;
 
-            // 单击复制单个
+            // 单击复制单个节点
             document.querySelectorAll('#results li').forEach(li => {
                 li.onclick = async () => {
                     const link = li.querySelector('.link').innerText;
@@ -250,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         generateLinks(u, d, ip, c);
     };
 
-    // 【一键复制全部】修复完成
+    // 一键复制全部（手机/电脑都正常一次性复制所有链接）
     document.getElementById('copyAllBtn').onclick = async () => {
         if (window.allGeneratedLinks.length === 0) {
             alert('请先生成节点');
@@ -268,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1500);
     };
 
-    // 默认生成
+    // 默认加载生成
     generateLinks(defaultUUID, defaultDomain, document.getElementById('presetIpSelect').value, defaultCustom3);
 });
 </script>
