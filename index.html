@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>VLESS节点生成器 | 自定义路径/参数</title>
+    <title>VLESS节点生成器 | 支持订阅链接 & 自定义Path</title>
     <style>
         * {
             margin: 0;
@@ -19,21 +19,22 @@
         }
         
         .container {
-            max-width: 950px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 30px;
+            border-radius: 28px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            padding: 28px;
             position: relative;
         }
         
         h1 {
-            color: #333;
+            color: #1e293b;
             margin-bottom: 20px;
             font-size: 1.9rem;
             text-align: center;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: -0.3px;
         }
         
         #results {
@@ -41,25 +42,25 @@
         }
         
         #results p {
-            color: #666;
+            color: #475569;
             text-align: center;
             margin: 20px 0;
         }
 
         .copy-all-btn {
             display: inline-block;
-            width: 48%;
-            padding: 12px;
-            margin: 10px 1%;
+            padding: 12px 18px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 40px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            flex: 1;
+            text-align: center;
         }
 
         .copy-all-btn:hover {
@@ -73,11 +74,19 @@
         
         .generate-btn {
             background-color: #FF9800;
-            box-shadow: 0 2px 8px rgba(255,152,0,0.3);
+            box-shadow: 0 3px 8px rgba(255,152,0,0.25);
         }
         
         .generate-btn:hover {
             background-color: #F57C00;
+        }
+
+        .subscribe-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 3px 8px rgba(37,99,235,0.3);
+        }
+        .subscribe-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
         }
 
         .copy-all-btn.copied {
@@ -85,9 +94,9 @@
         }
         
         h2 {
-            color: #444;
-            margin: 20px 0 15px;
-            font-size: 1.4rem;
+            color: #1e293b;
+            margin: 20px 0 12px;
+            font-size: 1.35rem;
             border-left: 5px solid #FF9800;
             padding-left: 15px;
         }
@@ -98,10 +107,10 @@
         }
         
         li {
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 15px;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
             border-left: 5px solid #FF9800;
             transition: all 0.2s ease;
             cursor: pointer;
@@ -110,38 +119,39 @@
         }
         
         li:hover {
-            transform: translateX(8px);
-            background: #fff3e0;
+            transform: translateX(6px);
+            background: #fff7ed;
             box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
         }
         
         li .node-name {
             font-weight: 700;
-            color: #e67e22;
+            color: #ea580c;
             font-size: 1rem;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         
         .link {
             display: block;
-            font-size: 0.82rem;
-            color: #2c3e50;
+            font-size: 0.75rem;
+            color: #1e293b;
             word-break: break-all;
             font-family: 'SF Mono', 'Courier New', monospace;
-            background: #ecf0f1;
+            background: #eef2ff;
             padding: 8px 10px;
-            border-radius: 12px;
+            border-radius: 14px;
             margin-top: 6px;
         }
         
         .copy-tip {
             position: absolute;
-            right: 18px;
+            right: 16px;
             top: 18px;
-            background-color: #2ecc71;
+            background-color: #10b981;
             color: white;
             padding: 4px 12px;
             border-radius: 30px;
@@ -155,24 +165,24 @@
         }
 
         .input-group {
-            margin: 20px 0;
+            margin: 18px 0;
             text-align: left;
         }
         
         .input-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.9rem;
+            color: #0f172a;
+            font-size: 0.85rem;
         }
         
         .input-group input, .input-group select {
             width: 100%;
             padding: 12px 14px;
-            border-radius: 16px;
+            border-radius: 20px;
             border: 1.5px solid #e2e8f0;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.2s;
             background: white;
         }
@@ -185,70 +195,131 @@
         
         .helper-note {
             font-size: 12px;
-            color: #e67e22;
+            color: #ea580c;
             text-align: center;
-            background: #fff8f0;
+            background: #fff7ed;
             padding: 8px 12px;
             border-radius: 40px;
-            margin: 12px 0;
+            margin: 14px 0;
         }
         
         .flex-btns {
             display: flex;
             gap: 12px;
             justify-content: center;
-            margin: 20px 0 10px;
+            margin: 20px 0 12px;
             flex-wrap: wrap;
         }
         
-        @media (max-width: 640px) {
+        .sub-card {
+            background: #f1f5f9;
+            border-radius: 24px;
+            padding: 16px 18px;
+            margin: 20px 0 0;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        
+        .sub-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .sub-header span {
+            font-weight: 700;
+            color: #0f172a;
+            background: #ffffffcc;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+        
+        .sub-url-preview {
+            background: #0f172a;
+            color: #a5f3fc;
+            font-family: monospace;
+            font-size: 0.7rem;
+            padding: 10px 12px;
+            border-radius: 18px;
+            word-break: break-all;
+            margin: 10px 0;
+            max-height: 70px;
+            overflow-y: auto;
+        }
+        
+        .small-btn {
+            background: #334155;
+            padding: 8px 18px;
+            font-size: 0.8rem;
+            border-radius: 40px;
+            border: none;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .small-btn:hover {
+            background: #1e293b;
+        }
+        
+        @media (max-width: 680px) {
             .container {
-                padding: 20px;
-            }
-            .copy-all-btn {
-                width: 100%;
-                margin: 8px 0;
+                padding: 18px;
             }
             .flex-btns {
                 flex-direction: column;
             }
-            li .node-name {
-                font-size: 0.9rem;
+            .copy-all-btn {
+                width: 100%;
             }
-            .link {
-                font-size: 0.7rem;
+            .sub-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
         
         .badge {
             background: #e9ecef;
             border-radius: 30px;
-            padding: 2px 8px;
+            padding: 2px 10px;
             font-size: 0.7rem;
-            color: #495057;
+            color: #2c3e50;
         }
         
-        hr {
-            margin: 16px 0;
-            border: none;
-            height: 1px;
-            background: #e9ecef;
+        .toast-msg {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
         <a href="https://github.com/gslege/CloudflareIP" target="_blank" style="color: #FF9800; text-decoration: none; font-weight: 600;">📦 作者GitHub</a>
     </div>
 
-    <h1>✨ 手搓VLESS节点生成器</h1>
+    <h1>✈️ VLESS 节点生成器</h1>
     <div class="helper-note">
-        ⚡ 支持自定义Path路径参数 | 填入 <code>/?ed=2560&PROT_TYPE=vless</code> 即可完美生效
+        ⚡ 支持自定义Path（例如 <code>/?ed=2560&PROT_TYPE=vless</code>） | 一键生成订阅链接
     </div>
 
     <div class="input-group">
-        <label>🔑 UUID (必填)</label>
+        <label>🔑 UUID</label>
         <input type="text" id="uuidInput" placeholder="7c45da23-4924-47eb-8426-45017280e5e7" value="7c45da23-4924-47eb-8426-45017280e5e7">
     </div>
 
@@ -258,19 +329,19 @@
     </div>
 
     <div class="input-group">
-        <label>🛸 反代IP (传统pyip参数，仅在未自定义Path时生效)</label>
+        <label>🛸 反代IP (传统pyip模式，仅在未自定义Path时生效)</label>
         <input type="text" id="custom3Input" placeholder="bpb.yousef.isegaro.com" value="bpb.yousef.isegaro.com">
-        <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">👉 若下方「自定义Path」留空，则使用 pyip=该地址 的默认路径</div>
+        <div style="font-size: 12px; color: #64748b; margin-top: 5px;">👉 若下方「自定义Path」留空，则使用 pyip=该地址</div>
     </div>
 
     <div class="input-group">
-        <label>🛤️ 自定义Path路径 (可选) — 完全替换 ?path= 后的内容</label>
+        <label>🛤️ 自定义Path路径 (完全覆盖path参数)</label>
         <input type="text" id="customPathInput" placeholder="例如: /?ed=2560&PROT_TYPE=vless  或 /custom/path?token=abc">
-        <div style="font-size: 12px; color: #e67e22; margin-top: 5px;">✅ 留空则使用传统 pyip=反代IP 方式；填写后将会完全覆盖path参数（自动URL编码）</div>
+        <div style="font-size: 12px; color: #ea580c; margin-top: 5px;">✅ 填写后将完全替换path内容（自动编码），留空则使用传统pyip模式</div>
     </div>
 
     <div class="input-group">
-        <label>📡 IP来源 (预设 / 自定义URL)</label>
+        <label>📡 IP/域名来源 (预设或自定义URL)</label>
         <select id="presetIpSelect" style="margin-bottom: 10px;">
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt">🇨🇳 me运营商IP</option>
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/SG.txt">🇸🇬 sg新加坡IP</option>
@@ -284,23 +355,31 @@
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/More.txt">📚 more更多IP</option>
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Domain.txt">🔗 domain优选域名</option>
         </select>
-        <input type="text" id="ipSourceInput" placeholder="或直接填入自定义IP列表URL" value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt">
+        <input type="text" id="ipSourceInput" placeholder="或自定义IP列表URL (每行格式: IP#节点名)" value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt">
     </div>
 
     <div class="flex-btns">
         <button id="generateBtn" class="copy-all-btn generate-btn">🚀 一键生成节点</button>
-        <button id="copyAllBtn" class="copy-all-btn">📋 一键复制全部</button>
+        <button id="copyAllBtn" class="copy-all-btn">📋 复制全部节点</button>
+        <button id="subscribeBtn" class="copy-all-btn subscribe-btn">🔗 生成订阅链接</button>
     </div>
 
     <div class="helper-note">
-        💡 提示：自定义Path留空 → 使用传统 <code>pyIP=反代IP</code> 路径；<br>
-        ✍️ 自定义Path填写任意内容（如 <code>/?ed=2560&PROT_TYPE=vless</code>）→ 节点path将完全替换成你输入的内容（自动编码，放心使用）
-    </div>
-    <div style="font-size: 12px; text-align: center; margin-top: 10px; color: #888;">
-        🧩 公益节点有流量限制，建议自行部署 <a href="https://github.com/gslege/CloudflareIP/blob/main/CF-Worker/_worker.js" target="_blank" style="color:#FF9800;">_worker.js</a> 获得稳定体验
+        💡 订阅功能说明：点击「生成订阅链接」将基于当前节点列表生成标准订阅地址（data URI），复制后在支持data scheme的客户端（如v2rayNG、Shadowrocket、Karing等）添加订阅即可。也可手动解码保存为.list文件。
     </div>
 
     <div id="results"></div>
+
+    <!-- 订阅链接展示卡 (动态刷新) -->
+    <div id="subscriptionCard" class="sub-card" style="display: none;">
+        <div class="sub-header">
+            <span>📡 实时订阅地址 (data URI)</span>
+            <button id="copySubUrlBtn" class="small-btn">📋 复制订阅链接</button>
+            <button id="downloadSubBtn" class="small-btn">💾 下载订阅文件</button>
+        </div>
+        <div id="subUrlPreview" class="sub-url-preview">点击上方按钮生成订阅链接</div>
+        <div style="font-size: 11px; color: #475569; margin-top: 8px;">✅ 订阅链接基于当前节点实时生成，节点更新后需重新生成订阅地址。</div>
+    </div>
 </div>
 
 <script>
@@ -308,13 +387,18 @@
         // DOM 元素
         const uuidInput = document.getElementById('uuidInput');
         const domainInput = document.getElementById('domainInput');
-        const custom3Input = document.getElementById('custom3Input');     // 反代IP (传统模式用)
+        const custom3Input = document.getElementById('custom3Input');
         const customPathInput = document.getElementById('customPathInput');
         const ipSourceInput = document.getElementById('ipSourceInput');
         const presetSelect = document.getElementById('presetIpSelect');
         const generateBtn = document.getElementById('generateBtn');
         const copyAllBtn = document.getElementById('copyAllBtn');
+        const subscribeBtn = document.getElementById('subscribeBtn');
         const resultsDiv = document.getElementById('results');
+        const subscriptionCard = document.getElementById('subscriptionCard');
+        const subUrlPreview = document.getElementById('subUrlPreview');
+        const copySubUrlBtn = document.getElementById('copySubUrlBtn');
+        const downloadSubBtn = document.getElementById('downloadSubBtn');
 
         // 默认值
         const DEFAULT_UUID = '7c45da23-4924-47eb-8426-45017280e5e7';
@@ -322,23 +406,29 @@
         const DEFAULT_CUSTOM3 = 'bpb.yousef.isegaro.com';
         const DEFAULT_IP_SOURCE = 'https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt';
 
-        // 预设下拉菜单同步到 ipSourceInput
+        // 存储当前生成的节点链接列表 (字符串数组)
+        let currentVlessLinks = [];   // 每个元素是完整的vless://链接
+
+        // 预设同步
         presetSelect.addEventListener('change', () => {
             const selectedUrl = presetSelect.value;
             if (selectedUrl) {
                 ipSourceInput.value = selectedUrl;
-                // 可选轻提示
-                const tipMsg = document.createElement('div');
-                tipMsg.textContent = '✓ IP来源已切换';
-                tipMsg.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#4CAF50; color:#fff; padding:8px 20px; border-radius:40px; font-size:13px; z-index:999; opacity:0.9;';
-                document.body.appendChild(tipMsg);
-                setTimeout(() => tipMsg.remove(), 1200);
+                showToast('✓ IP来源已切换', 1200);
             }
         });
 
-        // 辅助函数：构建VLESS链接 (完全支持自定义path)
+        // 通用提示
+        function showToast(msg, duration = 1800) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), duration);
+        }
+
+        // 构建VLESS链接 (完全支持自定义path)
         function buildVlessLink(ipOrDomain, nodeName, uuid, domain, custom3, customPath) {
-            // 基础参数 (强制 TLS + WS)
             const baseParams = {
                 encryption: 'none',
                 security: 'tls',
@@ -350,79 +440,63 @@
                 host: domain
             };
             
-            // ---------- 处理 path 参数 ----------
             let finalPath = '';
             const trimmedCustomPath = customPath ? customPath.trim() : '';
-            
             if (trimmedCustomPath !== '') {
-                // 用户自定义模式: 完全采用用户输入的内容作为path原始字符串 (需URL编码)
                 finalPath = trimmedCustomPath;
             } else {
-                // 传统模式: pyip=反代IP   (保留原有逻辑, 且注意反代IP可能包含特殊字符)
-                const legacyPath = `pyip=${custom3}`;
-                finalPath = legacyPath;
+                finalPath = `pyip=${custom3}`;
             }
             
-            // 对 path 进行 RFC 3986 编码 (保留/ ? = & 等字符不影响结构, 但必须编码确保安全)
-            // 注意: vless 链接中 path 参数需要整体编码, 但通常客户端能接受编码后的值,
-            // 这里使用 encodeURIComponent, 并将 %2F 保留为斜杠可读性? 保持标准即可
+            // RFC 3986 编码path
             let encodedPath;
             try {
                 encodedPath = encodeURIComponent(finalPath);
-                // 可选: 保持斜杠视觉? 但编码后 %2F 也没问题, 大多数客户端自动解码;
-                // 为可读性更强, 不对已有/做额外处理, encodeURIComponent符合规范。
             } catch(e) {
                 encodedPath = '';
             }
             
-            // 构建查询字符串 (手动拼接更可靠)
             const queryParts = [];
             for (const [key, val] of Object.entries(baseParams)) {
                 queryParts.push(`${key}=${encodeURIComponent(val)}`);
             }
-            // 添加 path 参数
             queryParts.push(`path=${encodedPath}`);
-            
             const queryString = queryParts.join('&');
-            // 对节点名称进行编码 (保留中文/emoji友好)
             let encodedName;
             try {
                 encodedName = encodeURIComponent(nodeName);
             } catch(e) {
                 encodedName = nodeName;
             }
-            
-            // 最终 VLESS URI
-            const vlessUri = `vless://${uuid}@${ipOrDomain}:443?${queryString}#${encodedName}`;
-            return vlessUri;
+            return `vless://${uuid}@${ipOrDomain}:443?${queryString}#${encodedName}`;
         }
 
-        // 核心生成函数
+        // 生成并渲染节点，同时更新currentVlessLinks
         async function generateLinks(uuid, domain, ipSourceUrl, custom3, customPathRaw) {
             if (!uuid || uuid.trim() === '') uuid = DEFAULT_UUID;
             if (!domain || domain.trim() === '') domain = DEFAULT_DOMAIN;
             if (!custom3 || custom3.trim() === '') custom3 = DEFAULT_CUSTOM3;
             
-            resultsDiv.innerHTML = '<p>⏳ 正在拉取IP/域名列表，请稍等...</p>';
+            resultsDiv.innerHTML = '<p>⏳ 正在获取IP/域名列表，请稍等...</p>';
+            subscriptionCard.style.display = 'none';
+            currentVlessLinks = [];
             
             try {
                 const response = await fetch(ipSourceUrl);
-                if (!response.ok) throw new Error(`HTTP ${response.status}: 获取IP列表失败`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}: 获取失败`);
                 const content = await response.text();
                 const lines = content.split(/\r?\n/).filter(line => line.trim().length > 0);
                 
                 if (lines.length === 0) {
-                    resultsDiv.innerHTML = '<p>⚠️ 未从该来源获取到任何有效IP/域名，请更换链接或检查格式</p>';
+                    resultsDiv.innerHTML = '<p>⚠️ 未从该来源获取到有效IP/域名，请更换链接或检查格式</p>';
                     return;
                 }
                 
-                const links = [];
-                // 正则匹配 IPv4 或 域名 (简单有效)
                 const ipDomainRegex = /^((?:\d{1,3}\.){3}\d{1,3}|(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})$/;
+                const nodes = [];
                 
                 for (let idx = 0; idx < lines.length; idx++) {
                     const line = lines[idx].trim();
-                    // 格式: IP或域名#名称 (兼容无#的情况)
                     let ipOrDomain = '';
                     let nodeName = '';
                     if (line.includes('#')) {
@@ -433,28 +507,24 @@
                         ipOrDomain = line;
                         nodeName = `节点${idx+1}`;
                     }
-                    
                     if (!ipDomainRegex.test(ipOrDomain)) continue;
-                    
-                    // 如果节点名称为空或仅空格，赋默认
                     if (!nodeName) nodeName = `Server${idx+1}`;
                     
-                    // 生成VLESS链接 (自定义path在此处起效)
                     const vlessLink = buildVlessLink(ipOrDomain, nodeName, uuid, domain, custom3, customPathRaw);
-                    links.push({
-                        name: nodeName,
-                        link: vlessLink
-                    });
+                    nodes.push({ name: nodeName, link: vlessLink });
                 }
                 
-                if (links.length === 0) {
+                if (nodes.length === 0) {
                     resultsDiv.innerHTML = '<p>❌ 未能生成任何有效节点，请检查IP来源内容格式 (每行应为 IP#名称 或 域名#名称)</p>';
                     return;
                 }
                 
-                // 渲染DOM
+                // 存储到全局
+                currentVlessLinks = nodes.map(n => n.link);
+                
+                // 渲染UI
                 let ulHtml = `<ul style="list-style: none; padding: 0;">`;
-                for (const item of links) {
+                for (const item of nodes) {
                     ulHtml += `
                         <li data-link="${escapeHtml(item.link)}">
                             <div class="node-name">
@@ -466,19 +536,151 @@
                         </li>
                     `;
                 }
-                ulHtml += `</ul><p style="text-align:center; margin-top:15px;">✨ 共生成 ${links.length} 个VLESS节点 | 点击任意卡片即可复制对应链接</p>`;
+                ulHtml += `</ul><p style="text-align:center; margin-top:15px;">✨ 共生成 ${nodes.length} 个VLESS节点 | 点击任意卡片即可复制对应链接</p>`;
                 resultsDiv.innerHTML = ulHtml;
-                
-                // 绑定复制事件 (动态)
                 attachCopyEvents();
                 
+                // 显示订阅卡片并刷新预览（但订阅链接需要点击生成按钮才刷新，但我们可以预填充当前数据）
+                updateSubscriptionCardPreview();
+                subscriptionCard.style.display = 'block';
+                showToast(`✅ 成功生成 ${nodes.length} 个节点，可点击「生成订阅链接」获取聚合地址`, 2000);
             } catch (err) {
                 console.error(err);
                 resultsDiv.innerHTML = `<p>💥 生成失败: ${err.message}<br>请检查IP来源地址是否可访问或网络是否通畅</p>`;
+                subscriptionCard.style.display = 'none';
             }
         }
         
-        // 简单的防XSS辅助
+        // 根据currentVlessLinks生成订阅内容 (base64)
+        function generateSubscriptionBase64() {
+            if (!currentVlessLinks.length) {
+                showToast('⚠️ 暂无节点，请先点击「一键生成节点」', 1500);
+                return null;
+            }
+            // 标准订阅格式: 每行一个完整的VLESS链接
+            const plainText = currentVlessLinks.join('\n');
+            // 将UTF-8字符串转为base64 (btoa需处理Unicode)
+            const utf8ToBase64 = (str) => {
+                try {
+                    // 适用于现代浏览器
+                    return btoa(unescape(encodeURIComponent(str)));
+                } catch(e) {
+                    // fallback
+                    return btoa(str);
+                }
+            };
+            return utf8ToBase64(plainText);
+        }
+        
+        // 生成订阅链接(data URI)并返回完整URL
+        function getSubscriptionDataUrl() {
+            const base64 = generateSubscriptionBase64();
+            if (!base64) return null;
+            return `data:text/plain;charset=utf-8;base64,${base64}`;
+        }
+        
+        // 更新订阅卡片中的预览 (显示当前节点数量及简短预览)
+        function updateSubscriptionCardPreview() {
+            if (currentVlessLinks.length === 0) {
+                subUrlPreview.innerText = '暂无节点，请先生成节点列表';
+                return;
+            }
+            const count = currentVlessLinks.length;
+            const firstLink = currentVlessLinks[0]?.substring(0, 70) + '...';
+            subUrlPreview.innerHTML = `📦 共 ${count} 个节点 · 示例: ${firstLink}<br>✨ 点击上方按钮复制订阅链接 (data URI) 或下载文件`;
+        }
+        
+        // 复制订阅链接到剪贴板
+        async function copySubscriptionLink() {
+            const subUrl = getSubscriptionDataUrl();
+            if (!subUrl) {
+                showToast('❌ 没有可用的节点，请先生成节点', 1500);
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(subUrl);
+                showToast('🔗 订阅链接已复制！请在客户端添加订阅（支持data URI的客户端）', 2500);
+                // 同时预览显示
+                subUrlPreview.innerText = subUrl.length > 200 ? subUrl.slice(0, 180) + '…' : subUrl;
+            } catch (err) {
+                showToast('复制失败，可手动选取', 1500);
+                console.error(err);
+            }
+        }
+        
+        // 下载订阅文件 (.txt)
+        function downloadSubscriptionFile() {
+            if (!currentVlessLinks.length) {
+                showToast('没有节点可导出', 1200);
+                return;
+            }
+            const plainText = currentVlessLinks.join('\n');
+            const blob = new Blob([plainText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `vless_sub_${new Date().toISOString().slice(0,19)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('📁 订阅文件已下载 (每行一个节点)', 1800);
+        }
+        
+        // 一键复制全部节点 (保留原功能，直接复制所有VLESS链接)
+        async function copyAllNodes() {
+            if (currentVlessLinks.length === 0) {
+                alert('暂无节点，请先点击「一键生成节点」');
+                return;
+            }
+            const allText = currentVlessLinks.join('\n');
+            try {
+                await navigator.clipboard.writeText(allText);
+                const btn = copyAllBtn;
+                const original = btn.textContent;
+                btn.textContent = '✅ 已复制全部';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = original;
+                    btn.classList.remove('copied');
+                }, 1500);
+                showToast(`📋 已复制 ${currentVlessLinks.length} 个节点到剪贴板`, 1500);
+            } catch (err) {
+                alert('复制失败，请重试');
+            }
+        }
+        
+        // 卡片复制节点事件
+        function attachCopyEvents() {
+            const items = document.querySelectorAll('#results li');
+            items.forEach(item => {
+                if (item.dataset.listener) return;
+                item.dataset.listener = 'true';
+                item.addEventListener('click', async (e) => {
+                    let link = item.dataset.link;
+                    if (!link) {
+                        const linkSpan = item.querySelector('.link');
+                        if (linkSpan) link = linkSpan.textContent;
+                    }
+                    if (!link) return;
+                    try {
+                        await navigator.clipboard.writeText(link);
+                        const copyTip = item.querySelector('.copy-tip');
+                        const originalBg = item.style.backgroundColor;
+                        item.style.backgroundColor = '#dcfce7';
+                        if (copyTip) copyTip.style.opacity = '1';
+                        setTimeout(() => {
+                            item.style.backgroundColor = originalBg || '';
+                            if (copyTip) copyTip.style.opacity = '0';
+                        }, 800);
+                        showToast('✓ 节点已复制', 800);
+                    } catch (err) {
+                        console.warn(err);
+                    }
+                });
+            });
+        }
+        
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, function(m) {
@@ -486,82 +688,10 @@
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
                 return m;
-            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-                return c;
             });
         }
         
-        // 绑定卡片点击复制及特效
-        function attachCopyEvents() {
-            const items = document.querySelectorAll('#results li');
-            items.forEach(item => {
-                // 避免重复绑定
-                if (item.dataset.listener) return;
-                item.dataset.listener = 'true';
-                item.addEventListener('click', async (e) => {
-                    // 获取存储的链接
-                    const link = item.dataset.link;
-                    if (!link) {
-                        const linkSpan = item.querySelector('.link');
-                        if (linkSpan) {
-                            await copyToClipboard(linkSpan.textContent, item);
-                        }
-                    } else {
-                        await copyToClipboard(link, item);
-                    }
-                });
-            });
-        }
-        
-        // 通用复制函数 + 视觉反馈
-        async function copyToClipboard(text, element) {
-            if (!text) return;
-            try {
-                await navigator.clipboard.writeText(text);
-                // 视觉反馈: 改变背景 & 显示copy-tip
-                const originalBg = element.style.backgroundColor;
-                element.style.backgroundColor = '#d4edda';
-                const copyTip = element.querySelector('.copy-tip');
-                if (copyTip) {
-                    copyTip.style.opacity = '1';
-                    setTimeout(() => {
-                        copyTip.style.opacity = '0';
-                    }, 1000);
-                }
-                setTimeout(() => {
-                    element.style.backgroundColor = originalBg || '';
-                }, 400);
-            } catch (err) {
-                console.warn('复制失败', err);
-                alert('❌ 复制失败，您可以手动选择复制链接');
-            }
-        }
-        
-        // 一键复制全部节点
-        async function copyAllLinks() {
-            const allLinkSpans = document.querySelectorAll('#results .link');
-            if (!allLinkSpans.length) {
-                alert('暂无节点可复制，请先点击「一键生成节点」');
-                return;
-            }
-            const allTexts = Array.from(allLinkSpans).map(span => span.textContent.trim()).join('\n');
-            if (!allTexts) return;
-            try {
-                await navigator.clipboard.writeText(allTexts);
-                const btn = copyAllBtn;
-                const originalText = btn.textContent;
-                btn.textContent = '✅ 已复制全部节点';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.classList.remove('copied');
-                }, 1800);
-            } catch (err) {
-                alert('复制失败，可尝试手动复制');
-            }
-        }
-        
-        // 读取表单值并调用生成
+        // 生成按钮逻辑 (读取表单)
         function onGenerate() {
             let uuid = uuidInput.value.trim();
             let domain = domainInput.value.trim();
@@ -569,78 +699,65 @@
             let customPath = customPathInput.value.trim();
             let ipSource = ipSourceInput.value.trim();
             
-            if (!uuid) {
-                uuid = DEFAULT_UUID;
-                uuidInput.value = DEFAULT_UUID;
-            }
-            if (!domain) {
-                domain = DEFAULT_DOMAIN;
-                domainInput.value = DEFAULT_DOMAIN;
-            }
-            if (!custom3) {
-                custom3 = DEFAULT_CUSTOM3;
-                custom3Input.value = DEFAULT_CUSTOM3;
-            }
-            if (!ipSource) {
-                ipSource = DEFAULT_IP_SOURCE;
-                ipSourceInput.value = DEFAULT_IP_SOURCE;
-                // 同时同步下拉框选中
-                for (let i = 0; i < presetSelect.options.length; i++) {
-                    if (presetSelect.options[i].value === DEFAULT_IP_SOURCE) {
-                        presetSelect.selectedIndex = i;
-                        break;
-                    }
-                }
-            } else {
-                // 手动修改ip源时，看看是否与预设匹配，不强制同步
-                let matched = false;
-                for (let i = 0; i < presetSelect.options.length; i++) {
-                    if (presetSelect.options[i].value === ipSource) {
-                        presetSelect.selectedIndex = i;
-                        matched = true;
-                        break;
-                    }
-                }
-                if (!matched) {
-                    // 不更改下拉，仅保留自定义url
-                }
-            }
+            if (!uuid) uuid = DEFAULT_UUID;
+            if (!domain) domain = DEFAULT_DOMAIN;
+            if (!custom3) custom3 = DEFAULT_CUSTOM3;
+            if (!ipSource) ipSource = DEFAULT_IP_SOURCE;
             
-            // 处理自定义path: 如果用户填写了内容，直接传入原始字符串（待内部编码）
-            // 注意：如果用户填写了空格，保留原样（但路径建议非空）
+            // 同步预设下拉选择（若匹配）
+            for (let i = 0; i < presetSelect.options.length; i++) {
+                if (presetSelect.options[i].value === ipSource) {
+                    presetSelect.selectedIndex = i;
+                    break;
+                }
+            }
             generateLinks(uuid, domain, ipSource, custom3, customPath);
         }
         
-        // 初始化加载默认IP来源的内容 (使用默认值展示)
-        async function initDefaultGenerate() {
-            const initUuid = DEFAULT_UUID;
-            const initDomain = DEFAULT_DOMAIN;
-            const initCustom3 = DEFAULT_CUSTOM3;
-            const initIpSource = DEFAULT_IP_SOURCE;
-            const initCustomPath = '';   // 默认无自定义路径，采用传统pyip模式
-            uuidInput.value = initUuid;
-            domainInput.value = initDomain;
-            custom3Input.value = initCustom3;
-            ipSourceInput.value = initIpSource;
-            customPathInput.value = '';  // 清空自定义路径，演示传统模式
-            // 同步下拉框
+        // 初始化默认加载
+        async function initDefault() {
+            uuidInput.value = DEFAULT_UUID;
+            domainInput.value = DEFAULT_DOMAIN;
+            custom3Input.value = DEFAULT_CUSTOM3;
+            ipSourceInput.value = DEFAULT_IP_SOURCE;
+            customPathInput.value = '';   // 传统模式演示
             for (let i = 0; i < presetSelect.options.length; i++) {
                 if (presetSelect.options[i].value === DEFAULT_IP_SOURCE) {
                     presetSelect.selectedIndex = i;
                     break;
                 }
             }
-            await generateLinks(initUuid, initDomain, initIpSource, initCustom3, '');
+            await generateLinks(DEFAULT_UUID, DEFAULT_DOMAIN, DEFAULT_IP_SOURCE, DEFAULT_CUSTOM3, '');
         }
         
-        // 事件绑定
+        // 绑定按钮事件
         generateBtn.addEventListener('click', onGenerate);
-        copyAllBtn.addEventListener('click', copyAllLinks);
+        copyAllBtn.addEventListener('click', copyAllNodes);
+        subscribeBtn.addEventListener('click', async () => {
+            // 若当前无节点但results里可能有 (兜底重新提取)
+            if (currentVlessLinks.length === 0) {
+                const linkSpans = document.querySelectorAll('#results .link');
+                if (linkSpans.length) {
+                    const freshLinks = Array.from(linkSpans).map(span => span.textContent.trim());
+                    if (freshLinks.length) {
+                        currentVlessLinks = freshLinks;
+                        updateSubscriptionCardPreview();
+                    } else {
+                        showToast('请先点击「一键生成节点」', 1200);
+                        return;
+                    }
+                } else {
+                    showToast('没有可用节点，请先生成', 1200);
+                    return;
+                }
+            }
+            await copySubscriptionLink();
+        });
+        copySubUrlBtn.addEventListener('click', copySubscriptionLink);
+        downloadSubBtn.addEventListener('click', downloadSubscriptionFile);
         
-        // 页面启动时自动加载传统模式示例 (保证开箱即用)
-        initDefaultGenerate().catch(e => console.warn(e));
-        
-        // 附加说明：如果用户需要查看自定义path示例，可在自定义path输入框填写 /?ed=2560&PROT_TYPE=vless 然后点击生成
+        // 启动
+        initDefault();
     });
 </script>
 </body>
