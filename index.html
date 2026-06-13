@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>VLESS节点生成器 | 支持订阅链接 & 自定义Path</title>
+    <title>VLESS节点生成器 | 纯文本订阅 & 自定义Path</title>
     <style>
         * {
             margin: 0;
@@ -93,77 +93,6 @@
             background-color: #2196F3;
         }
         
-        h2 {
-            color: #1e293b;
-            margin: 20px 0 12px;
-            font-size: 1.35rem;
-            border-left: 5px solid #FF9800;
-            padding-left: 15px;
-        }
-        
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        
-        li {
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 14px 16px;
-            margin-bottom: 14px;
-            border-left: 5px solid #FF9800;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            position: relative;
-            word-break: break-all;
-        }
-        
-        li:hover {
-            transform: translateX(6px);
-            background: #fff7ed;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-        }
-        
-        li .node-name {
-            font-weight: 700;
-            color: #ea580c;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .link {
-            display: block;
-            font-size: 0.75rem;
-            color: #1e293b;
-            word-break: break-all;
-            font-family: 'SF Mono', 'Courier New', monospace;
-            background: #eef2ff;
-            padding: 8px 10px;
-            border-radius: 14px;
-            margin-top: 6px;
-        }
-        
-        .copy-tip {
-            position: absolute;
-            right: 16px;
-            top: 18px;
-            background-color: #10b981;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
-            z-index: 10;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
         .input-group {
             margin: 18px 0;
             text-align: left;
@@ -238,17 +167,18 @@
             font-size: 0.8rem;
         }
         
-        .sub-url-preview {
+        .sub-content-preview {
             background: #0f172a;
             color: #a5f3fc;
             font-family: monospace;
             font-size: 0.7rem;
-            padding: 10px 12px;
+            padding: 12px;
             border-radius: 18px;
             word-break: break-all;
             margin: 10px 0;
-            max-height: 70px;
+            max-height: 150px;
             overflow-y: auto;
+            white-space: pre-wrap;
         }
         
         .small-btn {
@@ -315,7 +245,7 @@
 
     <h1>✈️ VLESS 节点生成器</h1>
     <div class="helper-note">
-        ⚡ 支持自定义Path（例如 <code>/?ed=2560&PROT_TYPE=vless</code>） | 一键生成订阅链接
+        ⚡ 支持自定义Path（例如 <code>/?ed=2560&PROT_TYPE=vless</code>） | 纯文本订阅内容（无Base64）
     </div>
 
     <div class="input-group">
@@ -361,24 +291,25 @@
     <div class="flex-btns">
         <button id="generateBtn" class="copy-all-btn generate-btn">🚀 一键生成节点</button>
         <button id="copyAllBtn" class="copy-all-btn">📋 复制全部节点</button>
-        <button id="subscribeBtn" class="copy-all-btn subscribe-btn">🔗 生成订阅链接</button>
+        <button id="showSubscribeBtn" class="copy-all-btn subscribe-btn">📡 生成订阅内容</button>
     </div>
 
     <div class="helper-note">
-        💡 订阅功能说明：点击「生成订阅链接」将基于当前节点列表生成标准订阅地址（data URI），复制后在支持data scheme的客户端（如v2rayNG、Shadowrocket、Karing等）添加订阅即可。也可手动解码保存为.list文件。
+        💡 订阅说明：点击「生成订阅内容」显示纯文本节点列表（每行一个VLESS链接），可复制或下载为.txt文件。<br>
+        支持客户端：v2rayNG / Karing / Nekobox / Shadowrocket 等（从剪贴板导入或导入本地文件）。
     </div>
 
     <div id="results"></div>
 
-    <!-- 订阅链接展示卡 (动态刷新) -->
+    <!-- 订阅内容卡片 (纯文本) -->
     <div id="subscriptionCard" class="sub-card" style="display: none;">
         <div class="sub-header">
-            <span>📡 实时订阅地址 (data URI)</span>
-            <button id="copySubUrlBtn" class="small-btn">📋 复制订阅链接</button>
-            <button id="downloadSubBtn" class="small-btn">💾 下载订阅文件</button>
+            <span>📄 纯文本订阅内容 (每行一个VLESS链接)</span>
+            <button id="copySubTextBtn" class="small-btn">📋 复制订阅内容</button>
+            <button id="downloadSubBtn" class="small-btn">💾 下载订阅文件 (.txt)</button>
         </div>
-        <div id="subUrlPreview" class="sub-url-preview">点击上方按钮生成订阅链接</div>
-        <div style="font-size: 11px; color: #475569; margin-top: 8px;">✅ 订阅链接基于当前节点实时生成，节点更新后需重新生成订阅地址。</div>
+        <div id="subContentPreview" class="sub-content-preview">暂无内容，请先点击「生成订阅内容」</div>
+        <div style="font-size: 11px; color: #475569; margin-top: 8px;">✅ 可将内容直接粘贴到支持“从剪贴板导入订阅”的客户端，或保存为 .txt 后通过“导入本地文件”添加。</div>
     </div>
 </div>
 
@@ -393,11 +324,11 @@
         const presetSelect = document.getElementById('presetIpSelect');
         const generateBtn = document.getElementById('generateBtn');
         const copyAllBtn = document.getElementById('copyAllBtn');
-        const subscribeBtn = document.getElementById('subscribeBtn');
+        const showSubscribeBtn = document.getElementById('showSubscribeBtn');
         const resultsDiv = document.getElementById('results');
         const subscriptionCard = document.getElementById('subscriptionCard');
-        const subUrlPreview = document.getElementById('subUrlPreview');
-        const copySubUrlBtn = document.getElementById('copySubUrlBtn');
+        const subContentPreview = document.getElementById('subContentPreview');
+        const copySubTextBtn = document.getElementById('copySubTextBtn');
         const downloadSubBtn = document.getElementById('downloadSubBtn');
 
         // 默认值
@@ -540,10 +471,10 @@
                 resultsDiv.innerHTML = ulHtml;
                 attachCopyEvents();
                 
-                // 显示订阅卡片并刷新预览（但订阅链接需要点击生成按钮才刷新，但我们可以预填充当前数据）
-                updateSubscriptionCardPreview();
-                subscriptionCard.style.display = 'block';
-                showToast(`✅ 成功生成 ${nodes.length} 个节点，可点击「生成订阅链接」获取聚合地址`, 2000);
+                // 自动更新订阅内容预览（但不显示卡片，由用户点击“生成订阅内容”时再显示和刷新）
+                // 预先填充订阅预览内容以便后续快速显示
+                updateSubscriptionPreviewText();
+                showToast(`✅ 成功生成 ${nodes.length} 个节点，可点击「生成订阅内容」获取纯文本列表`, 2000);
             } catch (err) {
                 console.error(err);
                 resultsDiv.innerHTML = `<p>💥 生成失败: ${err.message}<br>请检查IP来源地址是否可访问或网络是否通畅</p>`;
@@ -551,71 +482,62 @@
             }
         }
         
-        // 根据currentVlessLinks生成订阅内容 (base64)
-        function generateSubscriptionBase64() {
-            if (!currentVlessLinks.length) {
-                showToast('⚠️ 暂无节点，请先点击「一键生成节点」', 1500);
-                return null;
-            }
-            // 标准订阅格式: 每行一个完整的VLESS链接
-            const plainText = currentVlessLinks.join('\n');
-            // 将UTF-8字符串转为base64 (btoa需处理Unicode)
-            const utf8ToBase64 = (str) => {
-                try {
-                    // 适用于现代浏览器
-                    return btoa(unescape(encodeURIComponent(str)));
-                } catch(e) {
-                    // fallback
-                    return btoa(str);
-                }
-            };
-            return utf8ToBase64(plainText);
+        // 获取当前节点列表的纯文本（每行一个链接）
+        function getPlainSubscriptionText() {
+            return currentVlessLinks.join('\n');
         }
         
-        // 生成订阅链接(data URI)并返回完整URL
-        function getSubscriptionDataUrl() {
-            const base64 = generateSubscriptionBase64();
-            if (!base64) return null;
-            return `data:text/plain;charset=utf-8;base64,${base64}`;
-        }
-        
-        // 更新订阅卡片中的预览 (显示当前节点数量及简短预览)
-        function updateSubscriptionCardPreview() {
+        // 更新卡片中的预览文本
+        function updateSubscriptionPreviewText() {
             if (currentVlessLinks.length === 0) {
-                subUrlPreview.innerText = '暂无节点，请先生成节点列表';
+                subContentPreview.innerText = '暂无节点，请先生成节点列表';
                 return;
             }
-            const count = currentVlessLinks.length;
-            const firstLink = currentVlessLinks[0]?.substring(0, 70) + '...';
-            subUrlPreview.innerHTML = `📦 共 ${count} 个节点 · 示例: ${firstLink}<br>✨ 点击上方按钮复制订阅链接 (data URI) 或下载文件`;
+            const plainText = getPlainSubscriptionText();
+            // 限制预览行数过多时只显示前20行 + 省略号
+            const lines = plainText.split('\n');
+            let preview = lines.slice(0, 20).join('\n');
+            if (lines.length > 20) preview += `\n... 共 ${lines.length} 行，完整内容请复制或下载`;
+            subContentPreview.innerText = preview;
         }
         
-        // 复制订阅链接到剪贴板
-        async function copySubscriptionLink() {
-            const subUrl = getSubscriptionDataUrl();
-            if (!subUrl) {
-                showToast('❌ 没有可用的节点，请先生成节点', 1500);
+        // 显示订阅卡片并刷新内容
+        function showSubscriptionCard() {
+            if (currentVlessLinks.length === 0) {
+                showToast('⚠️ 没有可用节点，请先点击「一键生成节点」', 1500);
                 return;
             }
+            updateSubscriptionPreviewText();
+            subscriptionCard.style.display = 'block';
+        }
+        
+        // 复制订阅内容（纯文本）
+        async function copySubscriptionText() {
+            if (currentVlessLinks.length === 0) {
+                showToast('没有节点可复制', 1200);
+                return;
+            }
+            const plainText = getPlainSubscriptionText();
             try {
-                await navigator.clipboard.writeText(subUrl);
-                showToast('🔗 订阅链接已复制！请在客户端添加订阅（支持data URI的客户端）', 2500);
-                // 同时预览显示
-                subUrlPreview.innerText = subUrl.length > 200 ? subUrl.slice(0, 180) + '…' : subUrl;
+                await navigator.clipboard.writeText(plainText);
+                showToast(`📋 已复制 ${currentVlessLinks.length} 个节点（纯文本）到剪贴板`, 1800);
+                // 按钮临时反馈
+                const original = copySubTextBtn.textContent;
+                copySubTextBtn.textContent = '✓ 已复制';
+                setTimeout(() => { copySubTextBtn.textContent = original; }, 1500);
             } catch (err) {
-                showToast('复制失败，可手动选取', 1500);
-                console.error(err);
+                showToast('复制失败，请手动选择', 1200);
             }
         }
         
         // 下载订阅文件 (.txt)
         function downloadSubscriptionFile() {
-            if (!currentVlessLinks.length) {
+            if (currentVlessLinks.length === 0) {
                 showToast('没有节点可导出', 1200);
                 return;
             }
-            const plainText = currentVlessLinks.join('\n');
-            const blob = new Blob([plainText], { type: 'text/plain' });
+            const plainText = getPlainSubscriptionText();
+            const blob = new Blob([plainText], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -624,16 +546,16 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast('📁 订阅文件已下载 (每行一个节点)', 1800);
+            showToast('📁 订阅文件已下载 (.txt)', 1800);
         }
         
-        // 一键复制全部节点 (保留原功能，直接复制所有VLESS链接)
+        // 复制全部节点（原有功能，也复制纯文本）
         async function copyAllNodes() {
             if (currentVlessLinks.length === 0) {
-                alert('暂无节点，请先点击「一键生成节点」');
+                showToast('暂无节点，请先点击「一键生成节点」', 1200);
                 return;
             }
-            const allText = currentVlessLinks.join('\n');
+            const allText = getPlainSubscriptionText();
             try {
                 await navigator.clipboard.writeText(allText);
                 const btn = copyAllBtn;
@@ -646,7 +568,7 @@
                 }, 1500);
                 showToast(`📋 已复制 ${currentVlessLinks.length} 个节点到剪贴板`, 1500);
             } catch (err) {
-                alert('复制失败，请重试');
+                showToast('复制失败，请重试', 1200);
             }
         }
         
@@ -733,27 +655,8 @@
         // 绑定按钮事件
         generateBtn.addEventListener('click', onGenerate);
         copyAllBtn.addEventListener('click', copyAllNodes);
-        subscribeBtn.addEventListener('click', async () => {
-            // 若当前无节点但results里可能有 (兜底重新提取)
-            if (currentVlessLinks.length === 0) {
-                const linkSpans = document.querySelectorAll('#results .link');
-                if (linkSpans.length) {
-                    const freshLinks = Array.from(linkSpans).map(span => span.textContent.trim());
-                    if (freshLinks.length) {
-                        currentVlessLinks = freshLinks;
-                        updateSubscriptionCardPreview();
-                    } else {
-                        showToast('请先点击「一键生成节点」', 1200);
-                        return;
-                    }
-                } else {
-                    showToast('没有可用节点，请先生成', 1200);
-                    return;
-                }
-            }
-            await copySubscriptionLink();
-        });
-        copySubUrlBtn.addEventListener('click', copySubscriptionLink);
+        showSubscribeBtn.addEventListener('click', showSubscriptionCard);
+        copySubTextBtn.addEventListener('click', copySubscriptionText);
         downloadSubBtn.addEventListener('click', downloadSubscriptionFile);
         
         // 启动
