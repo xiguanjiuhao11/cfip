@@ -5,19 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>VLESS节点生成器 | 纯文本订阅 & 自定义Path</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -25,21 +19,8 @@
             border-radius: 28px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
             padding: 28px;
-            position: relative;
         }
-        
-        h1 {
-            color: #1e293b;
-            margin-bottom: 20px;
-            font-size: 1.9rem;
-            text-align: center;
-            font-weight: 700;
-        }
-        
-        #results {
-            margin-top: 25px;
-        }
-        
+        h1 { color: #1e293b; margin-bottom: 20px; font-size: 1.9rem; text-align: center; }
         .copy-all-btn {
             display: inline-block;
             padding: 12px 18px;
@@ -50,41 +31,15 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
             flex: 1;
             text-align: center;
         }
-        
-        .generate-btn {
-            background-color: #FF9800;
-        }
-        
-        .subscribe-btn {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-        }
-        
-        .blob-btn {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        }
-        
-        .copy-all-btn:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.02);
-        }
-        
-        .input-group {
-            margin: 18px 0;
-            text-align: left;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #0f172a;
-            font-size: 0.85rem;
-        }
-        
+        .generate-btn { background-color: #FF9800; }
+        .subscribe-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .blob-btn { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .copy-all-btn:hover { transform: translateY(-1px); filter: brightness(1.02); }
+        .input-group { margin: 18px 0; text-align: left; }
+        .input-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #0f172a; font-size: 0.85rem; }
         .input-group input, .input-group select {
             width: 100%;
             padding: 12px 14px;
@@ -92,7 +47,6 @@
             border: 1.5px solid #e2e8f0;
             font-size: 0.9rem;
         }
-        
         .helper-note {
             font-size: 12px;
             color: #ea580c;
@@ -102,15 +56,7 @@
             border-radius: 40px;
             margin: 14px 0;
         }
-        
-        .flex-btns {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin: 20px 0 12px;
-            flex-wrap: wrap;
-        }
-        
+        .flex-btns { display: flex; gap: 12px; justify-content: center; margin: 20px 0 12px; flex-wrap: wrap; }
         .sub-card {
             background: #f1f5f9;
             border-radius: 24px;
@@ -118,16 +64,7 @@
             margin: 20px 0 0;
             border: 1px solid #e2e8f0;
         }
-        
-        .sub-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        
+        .sub-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
         .sub-content-preview {
             background: #0f172a;
             color: #a5f3fc;
@@ -135,13 +72,10 @@
             font-size: 0.7rem;
             padding: 12px;
             border-radius: 18px;
-            word-break: break-all;
-            margin: 10px 0;
             max-height: 150px;
             overflow-y: auto;
             white-space: pre-wrap;
         }
-        
         .small-btn {
             background: #334155;
             padding: 8px 18px;
@@ -152,7 +86,6 @@
             font-weight: 500;
             cursor: pointer;
         }
-        
         .blob-link-area {
             margin-top: 12px;
             padding: 10px;
@@ -161,25 +94,6 @@
             font-size: 0.75rem;
             word-break: break-all;
         }
-        
-        .blob-link-area a {
-            color: #2563eb;
-            text-decoration: underline;
-        }
-        
-        @media (max-width: 680px) {
-            .container { padding: 18px; }
-            .flex-btns { flex-direction: column; }
-            .copy-all-btn { width: 100%; }
-        }
-        
-        .badge {
-            background: #e9ecef;
-            border-radius: 30px;
-            padding: 2px 10px;
-            font-size: 0.7rem;
-        }
-        
         .toast-msg {
             position: fixed;
             bottom: 25px;
@@ -193,6 +107,12 @@
             z-index: 1000;
             white-space: nowrap;
         }
+        @media (max-width: 680px) {
+            .container { padding: 18px; }
+            .flex-btns { flex-direction: column; }
+            .copy-all-btn { width: 100%; }
+        }
+        .badge { background: #e9ecef; border-radius: 30px; padding: 2px 10px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -200,35 +120,28 @@
     <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
         <a href="https://github.com/gslege/CloudflareIP" target="_blank" style="color: #FF9800; text-decoration: none; font-weight: 600;">📦 作者GitHub</a>
     </div>
-
     <h1>✈️ VLESS 节点生成器</h1>
-    <div class="helper-note">
-        ⚡ 支持自定义Path（例如 <code>/?ed=2560&PROT_TYPE=vless</code>） | 纯文本订阅内容
-    </div>
+    <div class="helper-note">⚡ 支持自定义Path（例: /?ed=2560） | 纯文本订阅，无Base64</div>
 
     <div class="input-group">
         <label>🔑 UUID</label>
-        <input type="text" id="uuidInput" placeholder="7c45da23-4924-47eb-8426-45017280e5e7" value="7c45da23-4924-47eb-8426-45017280e5e7">
+        <input type="text" id="uuidInput" value="7c45da23-4924-47eb-8426-45017280e5e7">
     </div>
-
     <div class="input-group">
-        <label>🌐 部署域名 (SNI / Host)</label>
-        <input type="text" id="domainInput" placeholder="img.xiguanjiuhao33.ccwu.cc" value="img.xiguanjiuhao33.ccwu.cc">
+        <label>🌐 部署域名 (SNI/Host)</label>
+        <input type="text" id="domainInput" value="img.xiguanjiuhao33.ccwu.cc">
     </div>
-
     <div class="input-group">
         <label>🛸 反代IP (传统模式)</label>
-        <input type="text" id="custom3Input" placeholder="bpb.yousef.isegaro.com" value="bpb.yousef.isegaro.com">
+        <input type="text" id="custom3Input" value="bpb.yousef.isegaro.com">
     </div>
-
     <div class="input-group">
-        <label>🛤️ 自定义Path路径 (可选)</label>
-        <input type="text" id="customPathInput" placeholder="例如: /?ed=2560&PROT_TYPE=vless">
+        <label>🛤️ 自定义Path (可选)</label>
+        <input type="text" id="customPathInput" placeholder="/?ed=2560&PROT_TYPE=vless">
     </div>
-
     <div class="input-group">
         <label>📡 IP/域名来源</label>
-        <select id="presetIpSelect" style="margin-bottom: 10px;">
+        <select id="presetIpSelect">
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt">🇨🇳 me运营商IP</option>
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/SG.txt">🇸🇬 sg新加坡IP</option>
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/JP.txt">🇯🇵 jp日本IP</option>
@@ -241,7 +154,7 @@
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/More.txt">📚 more更多IP</option>
             <option value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Domain.txt">🔗 domain优选域名</option>
         </select>
-        <input type="text" id="ipSourceInput" placeholder="自定义IP列表URL" value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt">
+        <input type="text" id="ipSourceInput" style="margin-top: 10px;" placeholder="或自定义URL" value="https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt">
     </div>
 
     <div class="flex-btns">
@@ -266,14 +179,20 @@
         <div class="sub-header">
             <span>🔗 临时订阅链接 (blob:)</span>
             <button id="copyBlobUrlBtn" class="small-btn">📋 复制链接</button>
+            <button id="previewBlobBtn" class="small-btn">👁️ 预览内容</button>
         </div>
         <div id="blobLinkDisplay" class="blob-link-area"></div>
-        <div style="font-size: 11px; color: #dc2626; margin-top: 8px;">⚠️ 该链接仅在当前浏览器标签页有效，刷新后失效。部分客户端不支持 blob 协议，建议使用「下载 .txt」或「复制内容」。</div>
+        <div style="font-size: 11px; color: #dc2626; margin-top: 8px;">
+            ⚠️ 该链接仅在当前标签页有效，刷新即失效。<br>
+            ❌ 大多数代理客户端（v2rayNG/Clash）不支持 blob: 协议。<br>
+            ✅ 推荐使用「下载 .txt」或「复制内容」导入客户端。
+        </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    (function(){
+        // DOM elements
         const uuidInput = document.getElementById('uuidInput');
         const domainInput = document.getElementById('domainInput');
         const custom3Input = document.getElementById('custom3Input');
@@ -292,51 +211,43 @@
         const blobLinkCard = document.getElementById('blobLinkCard');
         const blobLinkDisplay = document.getElementById('blobLinkDisplay');
         const copyBlobUrlBtn = document.getElementById('copyBlobUrlBtn');
+        const previewBlobBtn = document.getElementById('previewBlobBtn');
 
-        const DEFAULT_UUID = '7c45da23-4924-47eb-8426-45017280e5e7';
-        const DEFAULT_DOMAIN = 'img.xiguanjiuhao33.ccwu.cc';
-        const DEFAULT_CUSTOM3 = 'bpb.yousef.isegaro.com';
-        const DEFAULT_IP_SOURCE = 'https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt';
+        const DEFAULTS = {
+            uuid: '7c45da23-4924-47eb-8426-45017280e5e7',
+            domain: 'img.xiguanjiuhao33.ccwu.cc',
+            custom3: 'bpb.yousef.isegaro.com',
+            ipSource: 'https://raw.githubusercontent.com/gslege/CloudflareIP/refs/heads/main/Me.txt'
+        };
 
-        let currentVlessLinks = [];
+        let currentVlessLinks = [];   // 存储纯链接字符串
         let currentBlobUrl = null;
 
-        presetSelect.addEventListener('change', () => {
-            ipSourceInput.value = presetSelect.value;
-            showToast('✓ IP来源已切换', 1000);
-        });
-
-        function showToast(msg, duration = 1800) {
-            const toast = document.createElement('div');
+        // 辅助函数
+        function showToast(msg, duration=1800) {
+            let toast = document.createElement('div');
             toast.className = 'toast-msg';
             toast.innerText = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), duration);
         }
 
+        // 构建单条 VLESS 链接
         function buildVlessLink(ipOrDomain, nodeName, uuid, domain, custom3, customPath) {
             const baseParams = {
-                encryption: 'none',
-                security: 'tls',
-                sni: domain,
-                fp: 'random',
-                insecure: '0',
-                allowInsecure: '0',
-                type: 'ws',
-                host: domain
+                encryption: 'none', security: 'tls', sni: domain, fp: 'random',
+                insecure: '0', allowInsecure: '0', type: 'ws', host: domain
             };
             let finalPath = (customPath && customPath.trim()) ? customPath.trim() : `pyip=${custom3}`;
             let encodedPath = encodeURIComponent(finalPath);
-            const queryParts = [];
-            for (const [k, v] of Object.entries(baseParams)) queryParts.push(`${k}=${encodeURIComponent(v)}`);
-            queryParts.push(`path=${encodedPath}`);
-            const queryString = queryParts.join('&');
+            let query = Object.entries(baseParams).map(([k,v]) => `${k}=${encodeURIComponent(v)}`).join('&') + `&path=${encodedPath}`;
             let encodedName = encodeURIComponent(nodeName);
-            return `vless://${uuid}@${ipOrDomain}:443?${queryString}#${encodedName}`;
+            return `vless://${uuid}@${ipOrDomain}:443?${query}#${encodedName}`;
         }
 
-        async function generateLinks(uuid, domain, ipSourceUrl, custom3, customPathRaw) {
-            resultsDiv.innerHTML = '<p>⏳ 获取列表中...</p>';
+        // 生成节点列表
+        async function generateNodes(uuid, domain, ipSourceUrl, custom3, customPath) {
+            resultsDiv.innerHTML = '<p>⏳ 正在获取IP/域名列表...</p>';
             subscriptionCard.style.display = 'none';
             blobLinkCard.style.display = 'none';
             if (currentBlobUrl) { URL.revokeObjectURL(currentBlobUrl); currentBlobUrl = null; }
@@ -344,41 +255,43 @@
             try {
                 const resp = await fetch(ipSourceUrl);
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                const content = await resp.text();
-                const lines = content.split(/\r?\n/).filter(l => l.trim());
+                const text = await resp.text();
+                const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
                 const ipDomainRegex = /^((?:\d{1,3}\.){3}\d{1,3}|(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})$/;
-                const nodes = [];
-                for (let idx = 0; idx < lines.length; idx++) {
-                    let line = lines[idx].trim();
+                let nodes = [];
+                for (let i=0; i<lines.length; i++) {
+                    let line = lines[i].trim();
                     let ipOrDomain = '', nodeName = '';
                     if (line.includes('#')) {
                         let parts = line.split('#');
                         ipOrDomain = parts[0].trim();
-                        nodeName = parts.slice(1).join('#').trim() || `节点${idx+1}`;
+                        nodeName = parts.slice(1).join('#').trim() || `节点${i+1}`;
                     } else {
                         ipOrDomain = line;
-                        nodeName = `节点${idx+1}`;
+                        nodeName = `节点${i+1}`;
                     }
                     if (!ipDomainRegex.test(ipOrDomain)) continue;
-                    const link = buildVlessLink(ipOrDomain, nodeName, uuid, domain, custom3, customPathRaw);
+                    let link = buildVlessLink(ipOrDomain, nodeName, uuid, domain, custom3, customPath);
                     nodes.push({ name: nodeName, link });
                 }
-                if (nodes.length === 0) throw new Error('无有效IP/域名');
+                if (nodes.length === 0) throw new Error('未找到有效IP/域名，请检查来源格式');
                 currentVlessLinks = nodes.map(n => n.link);
-                let ulHtml = `<ul style="list-style:none; padding:0;">`;
-                for (const item of nodes) {
-                    ulHtml += `<li data-link="${escapeHtml(item.link)}" style="background:#f8fafc; border-radius:20px; padding:14px; margin-bottom:14px; border-left:5px solid #FF9800; cursor:pointer;">
+                // 渲染列表
+                let html = '<ul style="list-style:none; padding:0;">';
+                for (let item of nodes) {
+                    html += `<li data-link="${escapeHtml(item.link)}" style="background:#f8fafc; border-radius:20px; padding:14px; margin-bottom:14px; border-left:5px solid #FF9800; cursor:pointer; position:relative;">
                         <div style="font-weight:700; color:#ea580c;">📡 ${escapeHtml(item.name)} <span class="badge">点击复制</span></div>
-                        <span class="link" style="display:block; font-size:0.75rem; background:#eef2ff; padding:8px; border-radius:14px; margin-top:6px;">${escapeHtml(item.link)}</span>
+                        <div style="font-size:0.75rem; background:#eef2ff; padding:8px; border-radius:14px; margin-top:6px; word-break:break-all;">${escapeHtml(item.link)}</div>
                         <span class="copy-tip" style="position:absolute; right:16px; top:18px; background:#10b981; color:white; padding:4px 12px; border-radius:30px; font-size:0.7rem; opacity:0; transition:0.2s;">✓ 已复制</span>
                     </li>`;
                 }
-                ulHtml += `</ul><p style="text-align:center; margin-top:15px;">✨ 共 ${nodes.length} 个节点</p>`;
-                resultsDiv.innerHTML = ulHtml;
+                html += `</ul><p style="text-align:center; margin-top:15px;">✨ 共生成 ${nodes.length} 个VLESS节点</p>`;
+                resultsDiv.innerHTML = html;
                 attachCopyEvents();
-                showToast(`✅ 生成 ${nodes.length} 个节点`, 1500);
-            } catch (err) {
+                showToast(`✅ 成功生成 ${nodes.length} 个节点`, 1500);
+            } catch(err) {
                 resultsDiv.innerHTML = `<p>💥 生成失败: ${err.message}</p>`;
+                currentVlessLinks = [];
             }
         }
 
@@ -386,11 +299,11 @@
             document.querySelectorAll('#results li').forEach(li => {
                 if (li.dataset.listener) return;
                 li.dataset.listener = 'true';
-                li.addEventListener('click', async () => {
+                li.addEventListener('click', async (e) => {
                     let link = li.dataset.link;
                     if (!link) {
-                        let span = li.querySelector('.link');
-                        if (span) link = span.textContent;
+                        let div = li.querySelector('div[style*="font-size:0.75rem"]');
+                        if (div) link = div.innerText;
                     }
                     if (!link) return;
                     try {
@@ -408,60 +321,82 @@
             });
         }
 
-        function getPlainText() { return currentVlessLinks.join('\n'); }
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+        }
 
-        function updatePreview() {
-            if (!currentVlessLinks.length) subContentPreview.innerText = '暂无节点';
-            else {
-                let text = getPlainText();
-                let lines = text.split('\n');
-                let preview = lines.slice(0, 20).join('\n');
-                if (lines.length > 20) preview += `\n... 共 ${lines.length} 行`;
-                subContentPreview.innerText = preview;
+        function getPlainText() {
+            return currentVlessLinks.join('\n');
+        }
+
+        function updateSubscriptionPreview() {
+            if (!currentVlessLinks.length) {
+                subContentPreview.innerText = '暂无节点，请先生成。';
+                return;
             }
+            let text = getPlainText();
+            let lines = text.split('\n');
+            let preview = lines.slice(0, 20).join('\n');
+            if (lines.length > 20) preview += `\n... 共 ${lines.length} 行`;
+            subContentPreview.innerText = preview;
         }
 
         function showSubscription() {
-            if (!currentVlessLinks.length) { showToast('请先生成节点', 1200); return; }
-            updatePreview();
+            if (!currentVlessLinks.length) { showToast('请先点击「生成节点」', 1200); return; }
+            updateSubscriptionPreview();
             subscriptionCard.style.display = 'block';
             blobLinkCard.style.display = 'none';
         }
 
-        async function copyAll() {
-            if (!currentVlessLinks.length) { showToast('无节点', 1000); return; }
+        async function copyAllNodes() {
+            if (!currentVlessLinks.length) { showToast('无节点可复制', 1000); return; }
             await navigator.clipboard.writeText(getPlainText());
             showToast(`📋 已复制 ${currentVlessLinks.length} 个节点`, 1500);
         }
 
-        async function copySubText() {
+        async function copySubscriptionText() {
             if (!currentVlessLinks.length) return;
             await navigator.clipboard.writeText(getPlainText());
             showToast('订阅内容已复制', 1200);
         }
 
-        function downloadTxt() {
-            if (!currentVlessLinks.length) return;
-            const blob = new Blob([getPlainText()], { type: 'text/plain' });
+        function downloadTxtFile() {
+            if (!currentVlessLinks.length) { showToast('无节点', 1000); return; }
+            const blob = new Blob([getPlainText()], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `vless_${Date.now()}.txt`;
+            a.download = `vless_sub_${Date.now()}.txt`;
             a.click();
             URL.revokeObjectURL(url);
-            showToast('已下载 .txt 文件', 1200);
+            showToast('已下载 .txt 文件', 1500);
         }
 
+        // 生成临时 blob 链接 (确保内容为纯文本)
         function generateBlobLink() {
-            if (!currentVlessLinks.length) { showToast('请先生成节点', 1200); return; }
-            if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
-            const blob = new Blob([getPlainText()], { type: 'text/plain' });
+            if (!currentVlessLinks.length) {
+                showToast('❌ 请先点击「生成节点」', 1200);
+                return;
+            }
+            // 清理旧的 blob URL
+            if (currentBlobUrl) {
+                URL.revokeObjectURL(currentBlobUrl);
+                currentBlobUrl = null;
+            }
+            const plainContent = getPlainText();
+            // 再次确认内容不为空且不含 HTML 标签
+            if (plainContent.includes('<!DOCTYPE') || plainContent.includes('<html')) {
+                console.error('内容异常，可能包含HTML');
+                showToast('内容异常，请重新生成节点', 1500);
+                return;
+            }
+            const blob = new Blob([plainContent], { type: 'text/plain;charset=utf-8' });
             currentBlobUrl = URL.createObjectURL(blob);
-            const linkHtml = `<a href="${currentBlobUrl}" target="_blank">${currentBlobUrl}</a><br><span style="color:#475569;">点击可查看内容，复制链接后可在部分客户端尝试导入（不稳定）</span>`;
+            const linkHtml = `<a href="${currentBlobUrl}" target="_blank">${currentBlobUrl}</a><br><span style="color:#475569;">点击链接可在新标签页查看纯文本内容</span>`;
             blobLinkDisplay.innerHTML = linkHtml;
             blobLinkCard.style.display = 'block';
             subscriptionCard.style.display = 'none';
-            showToast('临时 blob: 链接已生成', 1500);
+            showToast('🔗 临时 blob: 链接已生成', 1500);
         }
 
         async function copyBlobUrl() {
@@ -470,39 +405,46 @@
             showToast('临时链接已复制', 1200);
         }
 
-        function escapeHtml(str) {
-            return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+        function previewBlobContent() {
+            if (!currentBlobUrl) { showToast('无临时链接', 1000); return; }
+            // 通过 fetch 获取 blob 内容并弹窗显示
+            fetch(currentBlobUrl)
+                .then(res => res.text())
+                .then(text => {
+                    let preview = text.length > 500 ? text.slice(0, 500) + '...' : text;
+                    alert('📄 临时文件内容预览（前500字符）：\n\n' + preview);
+                })
+                .catch(err => alert('预览失败：' + err.message));
         }
 
-        function onGenerate() {
-            let uuid = uuidInput.value.trim() || DEFAULT_UUID;
-            let domain = domainInput.value.trim() || DEFAULT_DOMAIN;
-            let custom3 = custom3Input.value.trim() || DEFAULT_CUSTOM3;
+        // 事件绑定
+        presetSelect.addEventListener('change', () => {
+            ipSourceInput.value = presetSelect.value;
+            showToast('IP来源已切换', 1000);
+        });
+
+        generateBtn.addEventListener('click', () => {
+            let uuid = uuidInput.value.trim() || DEFAULTS.uuid;
+            let domain = domainInput.value.trim() || DEFAULTS.domain;
+            let custom3 = custom3Input.value.trim() || DEFAULTS.custom3;
             let customPath = customPathInput.value.trim();
-            let ipSource = ipSourceInput.value.trim() || DEFAULT_IP_SOURCE;
+            let ipSource = ipSourceInput.value.trim() || DEFAULTS.ipSource;
+            // 同步下拉框选中
             for (let opt of presetSelect.options) if (opt.value === ipSource) presetSelect.selectedIndex = opt.index;
-            generateLinks(uuid, domain, ipSource, custom3, customPath);
-        }
+            generateNodes(uuid, domain, ipSource, custom3, customPath);
+        });
 
-        async function init() {
-            uuidInput.value = DEFAULT_UUID;
-            domainInput.value = DEFAULT_DOMAIN;
-            custom3Input.value = DEFAULT_CUSTOM3;
-            ipSourceInput.value = DEFAULT_IP_SOURCE;
-            customPathInput.value = '';
-            await generateLinks(DEFAULT_UUID, DEFAULT_DOMAIN, DEFAULT_IP_SOURCE, DEFAULT_CUSTOM3, '');
-        }
-
-        generateBtn.addEventListener('click', onGenerate);
-        copyAllBtn.addEventListener('click', copyAll);
+        copyAllBtn.addEventListener('click', copyAllNodes);
         showSubscribeBtn.addEventListener('click', showSubscription);
-        copySubTextBtn.addEventListener('click', copySubText);
-        downloadSubBtn.addEventListener('click', downloadTxt);
+        copySubTextBtn.addEventListener('click', copySubscriptionText);
+        downloadSubBtn.addEventListener('click', downloadTxtFile);
         genBlobLinkBtn.addEventListener('click', generateBlobLink);
         copyBlobUrlBtn.addEventListener('click', copyBlobUrl);
+        previewBlobBtn.addEventListener('click', previewBlobContent);
 
-        init();
-    });
+        // 初始加载默认节点
+        generateNodes(DEFAULTS.uuid, DEFAULTS.domain, DEFAULTS.ipSource, DEFAULTS.custom3, '');
+    })();
 </script>
 </body>
 </html>
