@@ -33,9 +33,9 @@
             cursor: pointer;
             flex: 1;
             text-align: center;
+            transition: 0.2s;
         }
         .generate-btn { background-color: #FF9800; }
-        .subscribe-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .blob-btn { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
         .copy-all-btn:hover { transform: translateY(-1px); filter: brightness(1.02); }
         .input-group { margin: 18px 0; text-align: left; }
@@ -57,42 +57,51 @@
             margin: 14px 0;
         }
         .flex-btns { display: flex; gap: 12px; justify-content: center; margin: 20px 0 12px; flex-wrap: wrap; }
-        .sub-card {
+        .temp-link-card {
             background: #f1f5f9;
             border-radius: 24px;
             padding: 16px 18px;
             margin: 20px 0 0;
             border: 1px solid #e2e8f0;
+            display: none;
         }
-        .sub-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
-        .sub-content-preview {
-            background: #0f172a;
-            color: #a5f3fc;
+        .temp-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .blob-url-text {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 14px;
             font-family: monospace;
-            font-size: 0.7rem;
-            padding: 12px;
-            border-radius: 18px;
-            max-height: 150px;
-            overflow-y: auto;
-            white-space: pre-wrap;
+            font-size: 0.75rem;
+            word-break: break-all;
+            border: 1px solid #cbd5e1;
+            user-select: all;
+            margin: 8px 0;
         }
         .small-btn {
             background: #334155;
-            padding: 8px 18px;
-            font-size: 0.8rem;
+            padding: 6px 16px;
+            font-size: 0.75rem;
             border-radius: 40px;
             border: none;
             color: white;
             font-weight: 500;
             cursor: pointer;
         }
-        .blob-link-area {
-            margin-top: 12px;
-            padding: 10px;
-            background: #eef2ff;
-            border-radius: 16px;
+        .node-count-badge {
+            background: #e2e8f0;
+            border-radius: 40px;
+            padding: 4px 12px;
             font-size: 0.75rem;
-            word-break: break-all;
+            font-weight: 600;
+            display: inline-block;
+            margin: 5px 0;
         }
         .toast-msg {
             position: fixed;
@@ -160,39 +169,38 @@
     <div class="flex-btns">
         <button id="generateBtn" class="copy-all-btn generate-btn">🚀 生成节点</button>
         <button id="copyAllBtn" class="copy-all-btn">📋 复制全部节点</button>
-        <button id="showSubscribeBtn" class="copy-all-btn subscribe-btn">📄 显示订阅内容</button>
+        <button id="downloadTxtBtn" class="copy-all-btn">💾 下载 .txt</button>
         <button id="genBlobLinkBtn" class="copy-all-btn blob-btn">🔗 生成临时 .txt 链接</button>
     </div>
 
-    <div id="results"></div>
-
-    <div id="subscriptionCard" class="sub-card" style="display: none;">
-        <div class="sub-header">
-            <span>📄 纯文本订阅内容</span>
-            <button id="copySubTextBtn" class="small-btn">📋 复制内容</button>
-            <button id="downloadSubBtn" class="small-btn">💾 下载 .txt</button>
-        </div>
-        <div id="subContentPreview" class="sub-content-preview"></div>
+    <!-- 显示节点数量 -->
+    <div style="text-align: center; margin: 10px 0;">
+        <span id="nodeCountDisplay" class="node-count-badge">📭 暂无节点</span>
     </div>
 
-    <div id="blobLinkCard" class="sub-card" style="display: none; margin-top: 15px;">
-        <div class="sub-header">
-            <span>🔗 临时订阅链接 (blob:)</span>
-            <button id="copyBlobUrlBtn" class="small-btn">📋 复制链接</button>
-            <button id="previewBlobBtn" class="small-btn">👁️ 预览内容</button>
+    <!-- 临时链接展示区域 (生成按钮下方，节点列表上方) -->
+    <div id="tempLinkCard" class="temp-link-card">
+        <div class="temp-header">
+            <span>🔗 临时订阅链接 (blob:协议)</span>
+            <div>
+                <button id="copyTempLinkBtn" class="small-btn">📋 复制链接</button>
+                <button id="openTempLinkBtn" class="small-btn">🌐 新标签页打开</button>
+            </div>
         </div>
-        <div id="blobLinkDisplay" class="blob-link-area"></div>
+        <div id="tempLinkUrl" class="blob-url-text">暂无，请先点击「生成临时 .txt 链接」</div>
         <div style="font-size: 11px; color: #dc2626; margin-top: 8px;">
             ⚠️ 该链接仅在当前标签页有效，刷新即失效。<br>
             ❌ 大多数代理客户端（v2rayNG/Clash）不支持 blob: 协议。<br>
-            ✅ 推荐使用「下载 .txt」或「复制内容」导入客户端。
+            ✅ 推荐使用「下载 .txt」或「复制全部节点」导入客户端。
         </div>
     </div>
+
+    <div id="results"></div>
 </div>
 
 <script>
     (function(){
-        // DOM elements
+        // DOM 元素
         const uuidInput = document.getElementById('uuidInput');
         const domainInput = document.getElementById('domainInput');
         const custom3Input = document.getElementById('custom3Input');
@@ -201,17 +209,14 @@
         const presetSelect = document.getElementById('presetIpSelect');
         const generateBtn = document.getElementById('generateBtn');
         const copyAllBtn = document.getElementById('copyAllBtn');
-        const showSubscribeBtn = document.getElementById('showSubscribeBtn');
+        const downloadTxtBtn = document.getElementById('downloadTxtBtn');
         const genBlobLinkBtn = document.getElementById('genBlobLinkBtn');
         const resultsDiv = document.getElementById('results');
-        const subscriptionCard = document.getElementById('subscriptionCard');
-        const subContentPreview = document.getElementById('subContentPreview');
-        const copySubTextBtn = document.getElementById('copySubTextBtn');
-        const downloadSubBtn = document.getElementById('downloadSubBtn');
-        const blobLinkCard = document.getElementById('blobLinkCard');
-        const blobLinkDisplay = document.getElementById('blobLinkDisplay');
-        const copyBlobUrlBtn = document.getElementById('copyBlobUrlBtn');
-        const previewBlobBtn = document.getElementById('previewBlobBtn');
+        const nodeCountDisplay = document.getElementById('nodeCountDisplay');
+        const tempLinkCard = document.getElementById('tempLinkCard');
+        const tempLinkUrl = document.getElementById('tempLinkUrl');
+        const copyTempLinkBtn = document.getElementById('copyTempLinkBtn');
+        const openTempLinkBtn = document.getElementById('openTempLinkBtn');
 
         const DEFAULTS = {
             uuid: '7c45da23-4924-47eb-8426-45017280e5e7',
@@ -231,6 +236,17 @@
             setTimeout(() => toast.remove(), duration);
         }
 
+        function updateNodeCountDisplay() {
+            const count = currentVlessLinks.length;
+            if (count === 0) {
+                nodeCountDisplay.innerHTML = '📭 暂无节点 (请先点击“生成节点”)';
+                nodeCountDisplay.style.background = '#fee2e2';
+            } else {
+                nodeCountDisplay.innerHTML = `✅ 当前 ${count} 个节点`;
+                nodeCountDisplay.style.background = '#dcfce7';
+            }
+        }
+
         function buildVlessLink(ipOrDomain, nodeName, uuid, domain, custom3, customPath) {
             const baseParams = {
                 encryption: 'none', security: 'tls', sni: domain, fp: 'random',
@@ -245,10 +261,12 @@
 
         async function generateNodes(uuid, domain, ipSourceUrl, custom3, customPath) {
             resultsDiv.innerHTML = '<p>⏳ 正在获取IP/域名列表...</p>';
-            subscriptionCard.style.display = 'none';
-            blobLinkCard.style.display = 'none';
-            if (currentBlobUrl) { URL.revokeObjectURL(currentBlobUrl); currentBlobUrl = null; }
-            
+            // 隐藏临时链接卡片
+            tempLinkCard.style.display = 'none';
+            if (currentBlobUrl) {
+                URL.revokeObjectURL(currentBlobUrl);
+                currentBlobUrl = null;
+            }
             try {
                 const resp = await fetch(ipSourceUrl);
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -273,6 +291,7 @@
                 }
                 if (nodes.length === 0) throw new Error('未找到有效IP/域名，请检查来源格式');
                 currentVlessLinks = nodes.map(n => n.link);
+                updateNodeCountDisplay();
                 // 渲染列表
                 let html = '<ul style="list-style:none; padding:0;">';
                 for (let item of nodes) {
@@ -289,6 +308,7 @@
             } catch(err) {
                 resultsDiv.innerHTML = `<p>💥 生成失败: ${err.message}</p>`;
                 currentVlessLinks = [];
+                updateNodeCountDisplay();
             }
         }
 
@@ -326,35 +346,10 @@
             return currentVlessLinks.join('\n');
         }
 
-        function updateSubscriptionPreview() {
-            if (!currentVlessLinks.length) {
-                subContentPreview.innerText = '暂无节点，请先生成。';
-                return;
-            }
-            let text = getPlainText();
-            let lines = text.split('\n');
-            let preview = lines.slice(0, 20).join('\n');
-            if (lines.length > 20) preview += `\n... 共 ${lines.length} 行`;
-            subContentPreview.innerText = preview;
-        }
-
-        function showSubscription() {
-            if (!currentVlessLinks.length) { showToast('请先点击「生成节点」', 1200); return; }
-            updateSubscriptionPreview();
-            subscriptionCard.style.display = 'block';
-            blobLinkCard.style.display = 'none';
-        }
-
         async function copyAllNodes() {
             if (!currentVlessLinks.length) { showToast('无节点可复制', 1000); return; }
             await navigator.clipboard.writeText(getPlainText());
             showToast(`📋 已复制 ${currentVlessLinks.length} 个节点`, 1500);
-        }
-
-        async function copySubscriptionText() {
-            if (!currentVlessLinks.length) return;
-            await navigator.clipboard.writeText(getPlainText());
-            showToast('订阅内容已复制', 1200);
         }
 
         function downloadTxtFile() {
@@ -369,59 +364,41 @@
             showToast('已下载 .txt 文件', 1500);
         }
 
-        // 生成临时 blob 链接，并进行内容有效性验证
-        function generateBlobLink() {
+        // 生成临时 blob 链接并显示在卡片中
+        function generateAndShowBlobLink() {
             if (!currentVlessLinks.length) {
-                showToast('❌ 请先点击「生成节点」', 1500);
+                showToast('❌ 请先点击「生成节点」获取节点列表', 2000);
                 return;
             }
-            const plainContent = getPlainText();
-            // 关键：验证内容是否以 vless:// 开头（至少包含一个 vless 链接）
-            if (!plainContent.includes('vless://')) {
-                console.error('内容无效，不包含任何 vless 链接', plainContent);
-                showToast('❌ 节点内容无效，请重新生成节点', 2000);
-                return;
-            }
-            // 额外检查：内容长度不能太小，且不能包含 HTML 标签
-            if (plainContent.length < 20 || plainContent.includes('<!DOCTYPE') || plainContent.includes('<html')) {
-                console.error('内容异常，可能包含HTML');
-                showToast('❌ 内容异常，请重新生成节点', 2000);
-                return;
-            }
-            
+            // 清理旧的 blob URL
             if (currentBlobUrl) {
                 URL.revokeObjectURL(currentBlobUrl);
                 currentBlobUrl = null;
             }
-            // 确保换行符统一为 LF
-            const finalContent = plainContent.replace(/\r\n/g, '\n');
-            const blob = new Blob([finalContent], { type: 'text/plain;charset=utf-8' });
+            const plainContent = getPlainText();
+            if (plainContent.includes('<!DOCTYPE') || plainContent.includes('<html')) {
+                showToast('内容异常，请重新生成节点', 1500);
+                return;
+            }
+            const blob = new Blob([plainContent], { type: 'text/plain;charset=utf-8' });
             currentBlobUrl = URL.createObjectURL(blob);
-            const linkHtml = `<a href="${currentBlobUrl}" target="_blank">${currentBlobUrl}</a><br><span style="color:#475569;">点击链接可在新标签页查看纯文本内容</span>`;
-            blobLinkDisplay.innerHTML = linkHtml;
-            blobLinkCard.style.display = 'block';
-            subscriptionCard.style.display = 'none';
-            showToast('🔗 临时 blob 链接已生成', 1500);
+            tempLinkUrl.innerText = currentBlobUrl;
+            tempLinkCard.style.display = 'block';
+            showToast('🔗 临时订阅链接已生成', 1500);
         }
 
-        async function copyBlobUrl() {
-            if (!currentBlobUrl) { showToast('请先生成临时链接', 1000); return; }
+        async function copyTempLink() {
+            if (!currentBlobUrl) { showToast('请先点击「生成临时 .txt 链接」', 1000); return; }
             await navigator.clipboard.writeText(currentBlobUrl);
             showToast('临时链接已复制', 1200);
         }
 
-        function previewBlobContent() {
-            if (!currentBlobUrl) { showToast('无临时链接', 1000); return; }
-            fetch(currentBlobUrl)
-                .then(res => res.text())
-                .then(text => {
-                    let preview = text.length > 800 ? text.slice(0, 800) + '...' : text;
-                    alert('📄 临时文件内容预览（前800字符）：\n\n' + preview);
-                })
-                .catch(err => alert('预览失败：' + err.message));
+        function openTempLink() {
+            if (!currentBlobUrl) { showToast('无临时链接，请先生成', 1000); return; }
+            window.open(currentBlobUrl, '_blank');
         }
 
-        // 事件绑定
+        // 预设下拉联动
         presetSelect.addEventListener('change', () => {
             ipSourceInput.value = presetSelect.value;
             showToast('IP来源已切换', 1000);
@@ -438,14 +415,12 @@
         });
 
         copyAllBtn.addEventListener('click', copyAllNodes);
-        showSubscribeBtn.addEventListener('click', showSubscription);
-        copySubTextBtn.addEventListener('click', copySubscriptionText);
-        downloadSubBtn.addEventListener('click', downloadTxtFile);
-        genBlobLinkBtn.addEventListener('click', generateBlobLink);
-        copyBlobUrlBtn.addEventListener('click', copyBlobUrl);
-        previewBlobBtn.addEventListener('click', previewBlobContent);
+        downloadTxtBtn.addEventListener('click', downloadTxtFile);
+        genBlobLinkBtn.addEventListener('click', generateAndShowBlobLink);
+        copyTempLinkBtn.addEventListener('click', copyTempLink);
+        openTempLinkBtn.addEventListener('click', openTempLink);
 
-        // 初始加载
+        // 初始加载默认节点
         generateNodes(DEFAULTS.uuid, DEFAULTS.domain, DEFAULTS.ipSource, DEFAULTS.custom3, '');
     })();
 </script>
