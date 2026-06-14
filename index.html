@@ -168,7 +168,7 @@
     <div class="flex-btns">
         <button id="generateBtn" class="copy-all-btn generate-btn">🚀 生成节点</button>
         <button id="copyAllBtn" class="copy-all-btn">📋 复制全部节点</button>
-        <button id="downloadTxtBtn" class="copy-all-btn">💾 下载 .txt (含临时链接)</button>
+        <button id="genTxtLinkBtn" class="copy-all-btn">🔗 生成 .txt 链接</button>
     </div>
 
     <!-- 显示节点数量 -->
@@ -176,7 +176,7 @@
         <span id="nodeCountDisplay" class="node-count-badge">📭 暂无节点</span>
     </div>
 
-    <!-- 临时链接展示区域（由下载按钮触发显示） -->
+    <!-- 临时链接展示区域（由“生成 .txt 链接”按钮触发显示） -->
     <div id="tempLinkCard" class="temp-link-card">
         <div class="temp-header">
             <span>🔗 临时订阅链接 (blob:协议)</span>
@@ -185,10 +185,10 @@
                 <button id="openTempLinkBtn" class="small-btn">🌐 新标签页打开</button>
             </div>
         </div>
-        <div id="tempLinkUrl" class="blob-url-text">暂无，请点击「下载 .txt」生成临时链接</div>
+        <div id="tempLinkUrl" class="blob-url-text">暂无，请点击「生成 .txt 链接」</div>
         <div style="font-size: 11px; color: #dc2626; margin-top: 8px;">
             ⚠️ 该链接仅在当前标签页有效，刷新即失效。<br>
-            ❌ 大多数代理客户端不支持 blob: 协议，推荐使用「复制全部节点」或直接下载的 .txt 文件导入。
+            ❌ 大多数代理客户端不支持 blob: 协议，推荐使用「复制全部节点」直接导入。
         </div>
     </div>
 
@@ -206,7 +206,7 @@
         const presetSelect = document.getElementById('presetIpSelect');
         const generateBtn = document.getElementById('generateBtn');
         const copyAllBtn = document.getElementById('copyAllBtn');
-        const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+        const genTxtLinkBtn = document.getElementById('genTxtLinkBtn');
         const resultsDiv = document.getElementById('results');
         const nodeCountDisplay = document.getElementById('nodeCountDisplay');
         const tempLinkCard = document.getElementById('tempLinkCard');
@@ -385,14 +385,12 @@
             await copyToClipboard(allText);
         }
 
-        // 生成临时链接 + 下载文件（合并功能）
-        function generateTempLinkAndDownload() {
+        // 仅生成临时链接（不自动下载）
+        function generateTempLinkOnly() {
             if (!currentVlessLinks.length) {
                 showToast('❌ 请先点击「生成节点」', 2000);
                 return;
             }
-
-            // 1. 生成临时 blob 链接并显示
             if (currentBlobUrl) {
                 URL.revokeObjectURL(currentBlobUrl);
                 currentBlobUrl = null;
@@ -406,26 +404,16 @@
             currentBlobUrl = URL.createObjectURL(blob);
             tempLinkUrl.innerText = currentBlobUrl;
             tempLinkCard.style.display = 'block';
-            showToast('🔗 临时订阅链接已生成', 1500);
-
-            // 2. 同时触发下载 .txt 文件
-            const downloadBlob = new Blob([plainContent], { type: 'text/plain;charset=utf-8' });
-            const downloadUrl = URL.createObjectURL(downloadBlob);
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = `vless_sub_${Date.now()}.txt`;
-            a.click();
-            URL.revokeObjectURL(downloadUrl);
-            showToast('📁 文件下载已开始', 1500);
+            showToast('🔗 临时订阅链接已生成，可复制链接自行下载', 2000);
         }
 
         async function copyTempLink() {
-            if (!currentBlobUrl) { showToast('请先点击「下载 .txt」生成临时链接', 1000); return; }
+            if (!currentBlobUrl) { showToast('请先点击「生成 .txt 链接」', 1000); return; }
             await copyToClipboard(currentBlobUrl);
         }
 
         function openTempLink() {
-            if (!currentBlobUrl) { showToast('无临时链接，请先点击「下载 .txt」', 1000); return; }
+            if (!currentBlobUrl) { showToast('无临时链接，请先点击「生成 .txt 链接」', 1000); return; }
             window.open(currentBlobUrl, '_blank');
         }
 
@@ -450,7 +438,7 @@
         });
 
         copyAllBtn.addEventListener('click', copyAllNodes);
-        downloadTxtBtn.addEventListener('click', generateTempLinkAndDownload);
+        genTxtLinkBtn.addEventListener('click', generateTempLinkOnly);
         copyTempLinkBtn.addEventListener('click', copyTempLink);
         openTempLinkBtn.addEventListener('click', openTempLink);
 
